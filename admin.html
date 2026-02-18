@@ -257,7 +257,7 @@
 <!-- ── LOGIN SCREEN ──────────────────────────────────────── -->
 <div id="loginScreen">
   <div class="login-card">
-    <div class="login-logo">🎓 TAIRI</div>
+    <div class="login-logo">TAIRI</div>
     <div class="login-sub">Report Portal — Admin Access</div>
 
     <div class="login-err" id="loginErr"></div>
@@ -271,8 +271,6 @@
     </form>
 
     <div class="login-hint">
-      Default password: <strong>tairi2025</strong><br>
-      <small>(Change it in the script CONFIG section)</small>
     </div>
     <a href="index.html" class="back-link">← Back to Student Portal</a>
   </div>
@@ -284,7 +282,7 @@
   <nav>
     <div class="nav-brand">TAIRI <span>Admin</span></div>
     <div class="nav-right">
-      <span class="nav-user">👤 Administrator</span>
+      <span class="nav-user"> Administrator</span>
       <button class="btn-out" onclick="logout()">Sign Out</button>
     </div>
   </nav>
@@ -293,7 +291,7 @@
 
     <!-- Notice if no submissions yet -->
     <div id="noData">
-      <strong>📭 No submissions yet</strong>
+      <strong> No submissions yet</strong>
       When students submit reports via <strong>index.html</strong>, they'll appear here automatically.
       Make sure both files are in the same GitHub Pages repo.
     </div>
@@ -330,9 +328,9 @@
           <option>October</option><option>November</option><option>December</option>
         </select>
       </div>
-      <button class="btn-search" onclick="render(1)">🔍 Search</button>
+      <button class="btn-search" onclick="render(1)">Search</button>
       <button class="btn-reset"  onclick="resetFilters()">Reset</button>
-      <button class="btn-export" onclick="exportCSV()">⬇ Export CSV</button>
+      <button class="btn-export" onclick="exportCSV()"> Export CSV</button>
     </div>
 
     <!-- Table -->
@@ -366,7 +364,7 @@
 
 <script>
 // ════════════════════════════════════════════════════════════
-//  ⚙️  CONFIG
+//   CONFIG
 // ════════════════════════════════════════════════════════════
 const ADMIN_PASSWORD = 'tairi2025';   // ← CHANGE THIS to your own password
 // ════════════════════════════════════════════════════════════
@@ -456,7 +454,7 @@ function render(page) {
     $('tbody').innerHTML = `
       <tr><td colspan="8">
         <div class="empty">
-          <div class="eico">📭</div>
+          <div class="eico"></div>
           <p>${total === 0 && getAll().length > 0 ? 'No results match your filters.' : 'No submissions yet.'}</p>
         </div>
       </td></tr>`;
