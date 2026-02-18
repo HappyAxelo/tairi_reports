@@ -68,7 +68,7 @@
     line-height: 1.15;
     margin-bottom: .75rem;
   }
-  .hero p { opacity: .82; font-size: 1rem; max-width: 480px; margin: 0 auto; }
+  .hero p { opacity: .82; font-size: 1rem; max-width: 520px; margin: 0 auto; }
 
   /* ── Main ────────────────────────────────────── */
   main {
@@ -85,7 +85,7 @@
     border-radius: 16px;
     padding: 2.5rem;
     width: 100%;
-    max-width: 540px;
+    max-width: 560px;
     box-shadow: 0 4px 32px rgba(0,0,0,.06);
   }
 
@@ -98,8 +98,31 @@
     color: var(--ink);
   }
 
+  /* ── Role Selection ──────────────────────────── */
+  .role-select {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .role-btn {
+    padding: 1.5rem 1rem;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    background: #fff;
+    cursor: pointer;
+    transition: all .2s;
+    text-align: center;
+  }
+  .role-btn:hover { border-color: var(--accent); background: var(--light); }
+  .role-btn.active { border-color: var(--accent); background: var(--light); box-shadow: 0 0 0 3px rgba(37,99,235,.12); }
+  .role-btn .ico { font-size: 2rem; margin-bottom: .5rem; }
+  .role-btn .label { font-weight: 600; font-size: .95rem; color: var(--ink); }
+  .role-btn .desc { font-size: .8rem; color: var(--muted); margin-top: .25rem; }
+
   /* ── Form ────────────────────────────────────── */
   .field { margin-bottom: 1.25rem; }
+  .field.hidden { display: none; }
   label {
     display: block;
     font-size: .82rem;
@@ -230,25 +253,9 @@
     color: var(--muted);
   }
   footer a { color: var(--muted); }
-
-  /* ── Setup banner ────────────────────────────── */
-  #setupBanner {
-    background: #fffbeb;
-    border-bottom: 1px solid #fde68a;
-    padding: .75rem 1.5rem;
-    font-size: .85rem;
-    color: #92400e;
-    text-align: center;
-    display: none;
-  }
-  #setupBanner.on { display: block; }
 </style>
 </head>
 <body>
-
-<div id="setupBanner">
-  ⚙️ <strong>Setup needed:</strong> Open this file and fill in your Cloudinary Cloud Name in the CONFIG section at the top of the script.
-</div>
 
 <header>
   <div class="logo">TAIRI <span>Report Portal</span></div>
@@ -257,7 +264,7 @@
 
 <div class="hero">
   <h1>Monthly Report Submission</h1>
-  <p>Fill in your details and upload your PDF report below. It only takes a minute.</p>
+  <p>Submit your monthly reports as a student or supervisor</p>
 </div>
 
 <main>
@@ -267,31 +274,85 @@
     <div class="success" id="success">
       <div class="s-ico">✅</div>
       <h2>Report Received!</h2>
-      <p>Your monthly report has been submitted successfully. Keep this confirmation for your records.</p>
+      <p>Your monthly report has been submitted successfully.</p>
       <div class="rec" id="rec"></div>
       <button class="btn-new" onclick="resetForm()">Submit Another Report</button>
     </div>
 
     <!-- Form -->
     <div id="formWrap">
-      <div class="card-title">📋 Submission Details</div>
+      <div class="card-title">📋 Report Submission</div>
       <div class="alert alert-err" id="errBox"></div>
 
+      <!-- Role Selection -->
+      <div class="role-select">
+        <div class="role-btn" id="roleStudent" onclick="selectRole('student')">
+          <div class="ico">🎓</div>
+          <div class="label">Student</div>
+          <div class="desc">Submit student report</div>
+        </div>
+        <div class="role-btn" id="roleSupervisor" onclick="selectRole('supervisor')">
+          <div class="ico">👨‍🏫</div>
+          <div class="label">Supervisor</div>
+          <div class="desc">Submit supervisor report</div>
+        </div>
+      </div>
+
       <form id="form" novalidate>
-        <div class="field">
+
+        <!-- Student Fields -->
+        <div class="field student-field hidden">
           <label>Full Name</label>
           <input type="text" id="fullName" placeholder="e.g. Amina Yusuf" maxlength="150" autocomplete="name"/>
           <div class="fe" id="e-name">Please enter your full name.</div>
         </div>
 
-        <div class="field">
+        <div class="field student-field hidden">
           <label>Registration Number</label>
           <input type="text" id="regNum" placeholder="e.g. MCS/2024/001" maxlength="50" autocomplete="off"/>
           <div class="fe" id="e-reg">Please enter your registration number.</div>
         </div>
 
+        <div class="field student-field hidden">
+          <label>Supervisor</label>
+          <div class="select-wrap">
+            <select id="supervisor">
+              <option value="">Select supervisor</option>
+              <option>Dr. John Smith</option>
+              <option>Dr. Sarah Johnson</option>
+              <option>Prof. Michael Chen</option>
+              <option>Dr. Amina Hassan</option>
+              <option>Prof. David Wilson</option>
+              <option>Dr. Emily Brown</option>
+              <option>Dr. Ahmed Mohamed</option>
+              <option>Prof. Linda Davis</option>
+            </select>
+          </div>
+          <div class="fe" id="e-supervisor">Select a supervisor.</div>
+        </div>
+
+        <!-- Supervisor Fields -->
+        <div class="field supervisor-field hidden">
+          <label>Supervisor Name</label>
+          <div class="select-wrap">
+            <select id="supervisorName">
+              <option value="">Select your name</option>
+              <option>Dr. John Smith</option>
+              <option>Dr. Sarah Johnson</option>
+              <option>Prof. Michael Chen</option>
+              <option>Dr. Amina Hassan</option>
+              <option>Prof. David Wilson</option>
+              <option>Dr. Emily Brown</option>
+              <option>Dr. Ahmed Mohamed</option>
+              <option>Prof. Linda Davis</option>
+            </select>
+          </div>
+          <div class="fe" id="e-supervisorName">Select your name.</div>
+        </div>
+
+        <!-- Common Fields -->
         <div class="row">
-          <div class="field">
+          <div class="field common-field hidden">
             <label>Month</label>
             <div class="select-wrap">
               <select id="month">
@@ -304,7 +365,7 @@
             </div>
             <div class="fe" id="e-month">Select a month.</div>
           </div>
-          <div class="field">
+          <div class="field student-field hidden">
             <label>Program</label>
             <div class="select-wrap">
               <select id="program">
@@ -317,20 +378,20 @@
           </div>
         </div>
 
-        <div class="field">
-          <label>PDF Report</label>
+        <div class="field common-field hidden">
+          <label>Report File</label>
           <div class="drop" id="drop">
-            <input type="file" id="pdf" accept=".pdf,application/pdf"/>
+            <input type="file" id="pdf" accept=".pdf,.xlsx,.xls,application/pdf,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"/>
             <div class="drop-ico">📄</div>
             <p><strong>Click to browse</strong> or drag &amp; drop here</p>
-            <div class="hint">PDF files only · Maximum 10 MB</div>
+            <div class="hint">PDF or Excel files · Maximum 10 MB</div>
             <div class="picked-name" id="pickedName"></div>
           </div>
           <div class="prog-wrap" id="progWrap">
             <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
             <div class="prog-txt" id="progTxt">Uploading…</div>
           </div>
-          <div class="fe" id="e-file">Please select a PDF file (max 10 MB).</div>
+          <div class="fe" id="e-file">Please select a PDF or Excel file (max 10 MB).</div>
         </div>
 
         <button type="submit" class="btn" id="submitBtn">
@@ -347,16 +408,39 @@
 
 <script>
 // ════════════════════════════════════════════════════════════
-//  ⚙️  CONFIG — Cloudinary Settings
+//  ⚙️  CONFIG
 // ════════════════════════════════════════════════════════════
-const CLOUDINARY_CLOUD_NAME = 'dbdebgq1p';         // ✅ Your Cloud Name
-const CLOUDINARY_UPLOAD_PRESET = 'tairi_reports';  // ← Create this in Cloudinary Settings > Upload Presets (unsigned)
+const CLOUDINARY_CLOUD_NAME = 'dbdebgq1p';
+const CLOUDINARY_UPLOAD_PRESET = 'tairi_reports';
 // ════════════════════════════════════════════════════════════
-
-// Setup complete - cloud name is configured!
 
 const $ = id => document.getElementById(id);
 const pdf = $('pdf'), drop = $('drop');
+let currentRole = null;
+
+// ── Role Selection ────────────────────────────────────────
+function selectRole(role) {
+  currentRole = role;
+  
+  // Update button states
+  $('roleStudent').classList.toggle('active', role === 'student');
+  $('roleSupervisor').classList.toggle('active', role === 'supervisor');
+  
+  // Show/hide fields
+  document.querySelectorAll('.student-field').forEach(el => {
+    el.classList.toggle('hidden', role !== 'student');
+  });
+  document.querySelectorAll('.supervisor-field').forEach(el => {
+    el.classList.toggle('hidden', role !== 'supervisor');
+  });
+  document.querySelectorAll('.common-field').forEach(el => {
+    el.classList.remove('hidden');
+  });
+  
+  // Clear validation errors
+  document.querySelectorAll('.fe').forEach(el => el.classList.remove('on'));
+  document.querySelectorAll('input, select').forEach(el => el.classList.remove('bad'));
+}
 
 // ── Drag & drop ───────────────────────────────────────────
 drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('over'); });
@@ -372,10 +456,15 @@ pdf.addEventListener('change', checkFile);
 
 function checkFile() {
   const f = pdf.files[0]; if (!f) return;
-  const isPdf = f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf');
-  const isOk  = f.size <= 10 * 1024 * 1024;
-  if (!isPdf) { showFE('e-file', 'Only PDF files are allowed.'); pdf.value = ''; return; }
-  if (!isOk)  { showFE('e-file', 'File is too large. Max 10 MB.'); pdf.value = ''; return; }
+  const ext = f.name.toLowerCase().split('.').pop();
+  const validTypes = ['pdf', 'xlsx', 'xls'];
+  const validMimes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel'];
+  
+  const isValid = validTypes.includes(ext) || validMimes.includes(f.type);
+  const isOk    = f.size <= 10 * 1024 * 1024;
+  
+  if (!isValid) { showFE('e-file', 'Only PDF or Excel files are allowed.'); pdf.value = ''; return; }
+  if (!isOk)    { showFE('e-file', 'File is too large. Max 10 MB.'); pdf.value = ''; return; }
   clearFE('e-file'); drop.classList.add('picked');
   $('pickedName').textContent = `✅ ${f.name} · ${(f.size/1024/1024).toFixed(2)} MB`;
 }
@@ -391,13 +480,49 @@ $('form').addEventListener('submit', async e => {
   $('errBox').classList.remove('on');
 
   try {
-    // Build clean filename: REGNUM_Name_Month.pdf
-    const regNum  = $('regNum').value.trim().toUpperCase().replace(/[^A-Z0-9\/\-_]/g, '_');
-    const name    = $('fullName').value.trim().replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
+    const fileExt = pdf.files[0].name.split('.').pop().toLowerCase();
     const month   = $('month').value;
-    const program = $('program').value;
-    const folder  = `tairi_reports/${program}/${month}`;
-    const pubId   = `${regNum}_${name}_${month}`;
+    
+    let folder, pubId, submission;
+    
+    if (currentRole === 'student') {
+      const regNum     = $('regNum').value.trim().toUpperCase().replace(/[^A-Z0-9\/\-_]/g, '_');
+      const name       = $('fullName').value.trim().replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
+      const program    = $('program').value;
+      const supervisor = $('supervisor').value;
+      
+      folder = `tairi_reports/students/${program}/${month}`;
+      pubId  = `${regNum}_${name}_${month}`;
+      
+      submission = {
+        id:           Date.now().toString(),
+        type:         'student',
+        fullName:     $('fullName').value.trim(),
+        regNum:       $('regNum').value.trim().toUpperCase(),
+        program,
+        supervisor,
+        month,
+        filename:     pubId + '.' + fileExt,
+        fileSize:     pdf.files[0].size,
+        submittedAt:  new Date().toISOString(),
+      };
+    } else {
+      const supervisorName = $('supervisorName').value;
+      const cleanName      = supervisorName.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
+      
+      folder = `tairi_reports/supervisors/${month}`;
+      pubId  = `Supervisor_${cleanName}_${month}`;
+      
+      submission = {
+        id:             Date.now().toString(),
+        type:           'supervisor',
+        supervisorName,
+        month,
+        filename:       pubId + '.' + fileExt,
+        fileSize:       pdf.files[0].size,
+        submittedAt:    new Date().toISOString(),
+      };
+    }
 
     // Upload to Cloudinary
     const formData = new FormData();
@@ -405,31 +530,14 @@ $('form').addEventListener('submit', async e => {
     formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
     formData.append('public_id', pubId);
     formData.append('folder', folder);
-    formData.append('resource_type', 'raw'); // required for PDFs
+    formData.append('resource_type', 'raw');
 
-    // Show progress bar
     $('progWrap').classList.add('on');
-
     const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/raw/upload`;
-
-    // XHR for progress tracking
     const result = await uploadWithProgress(cloudinaryUrl, formData);
-
-    // Save submission record locally
-    const submission = {
-      id:           Date.now().toString(),
-      fullName:     $('fullName').value.trim(),
-      regNum:       $('regNum').value.trim().toUpperCase(),
-      month,
-      program,
-      filename:     pubId + '.pdf',
-      fileUrl:      result.secure_url,
-      fileSize:     pdf.files[0].size,
-      submittedAt:  new Date().toISOString(),
-    };
+    
+    submission.fileUrl = result.secure_url;
     saveSubmission(submission);
-
-    // Show success
     showSuccess(submission);
 
   } catch (err) {
@@ -483,33 +591,63 @@ function saveSubmission(sub) {
 function showSuccess(sub) {
   $('formWrap').style.display = 'none';
   $('success').classList.add('on');
-  $('rec').innerHTML = `
-    <p><strong>Name:</strong> ${sub.fullName}</p>
-    <p><strong>Reg. No.:</strong> ${sub.regNum}</p>
-    <p><strong>Month:</strong> ${sub.month} · <strong>Program:</strong> ${sub.program}</p>
-    <p><strong>File:</strong> ${sub.filename}</p>
-    <p><strong>Submitted:</strong> ${new Date(sub.submittedAt).toLocaleString()}</p>
-  `;
+  
+  if (sub.type === 'student') {
+    $('rec').innerHTML = `
+      <p><strong>Type:</strong> Student Report</p>
+      <p><strong>Name:</strong> ${sub.fullName}</p>
+      <p><strong>Reg. No.:</strong> ${sub.regNum}</p>
+      <p><strong>Program:</strong> ${sub.program}</p>
+      <p><strong>Supervisor:</strong> ${sub.supervisor}</p>
+      <p><strong>Month:</strong> ${sub.month}</p>
+      <p><strong>File:</strong> ${sub.filename}</p>
+      <p><strong>Submitted:</strong> ${new Date(sub.submittedAt).toLocaleString()}</p>
+    `;
+  } else {
+    $('rec').innerHTML = `
+      <p><strong>Type:</strong> Supervisor Report</p>
+      <p><strong>Supervisor:</strong> ${sub.supervisorName}</p>
+      <p><strong>Month:</strong> ${sub.month}</p>
+      <p><strong>File:</strong> ${sub.filename}</p>
+      <p><strong>Submitted:</strong> ${new Date(sub.submittedAt).toLocaleString()}</p>
+    `;
+  }
 }
 
 // Validate form
 function validate() {
+  if (!currentRole) {
+    $('errBox').textContent = 'Please select whether you are a student or supervisor.';
+    $('errBox').classList.add('on');
+    return false;
+  }
+  
   let ok = true;
-  const name = $('fullName').value.trim();
-  if (!name || name.length < 2) { showFE('e-name'); $('fullName').classList.add('bad'); ok = false; }
-  else { clearFE('e-name'); $('fullName').classList.remove('bad'); }
+  
+  if (currentRole === 'student') {
+    const name = $('fullName').value.trim();
+    if (!name || name.length < 2) { showFE('e-name'); $('fullName').classList.add('bad'); ok = false; }
+    else { clearFE('e-name'); $('fullName').classList.remove('bad'); }
 
-  const reg = $('regNum').value.trim();
-  if (!reg || reg.length < 2) { showFE('e-reg'); $('regNum').classList.add('bad'); ok = false; }
-  else { clearFE('e-reg'); $('regNum').classList.remove('bad'); }
+    const reg = $('regNum').value.trim();
+    if (!reg || reg.length < 2) { showFE('e-reg'); $('regNum').classList.add('bad'); ok = false; }
+    else { clearFE('e-reg'); $('regNum').classList.remove('bad'); }
 
+    if (!$('supervisor').value) { showFE('e-supervisor'); $('supervisor').classList.add('bad'); ok = false; }
+    else { clearFE('e-supervisor'); $('supervisor').classList.remove('bad'); }
+
+    if (!$('program').value) { showFE('e-prog'); $('program').classList.add('bad'); ok = false; }
+    else { clearFE('e-prog'); $('program').classList.remove('bad'); }
+  } else {
+    if (!$('supervisorName').value) { showFE('e-supervisorName'); $('supervisorName').classList.add('bad'); ok = false; }
+    else { clearFE('e-supervisorName'); $('supervisorName').classList.remove('bad'); }
+  }
+  
   if (!$('month').value) { showFE('e-month'); $('month').classList.add('bad'); ok = false; }
   else { clearFE('e-month'); $('month').classList.remove('bad'); }
 
-  if (!$('program').value) { showFE('e-prog'); $('program').classList.add('bad'); ok = false; }
-  else { clearFE('e-prog'); $('program').classList.remove('bad'); }
-
-  if (!pdf.files[0]) { showFE('e-file', 'Please select a PDF file.'); ok = false; }
+  if (!pdf.files[0]) { showFE('e-file', 'Please select a file.'); ok = false; }
+  
   return ok;
 }
 
@@ -517,12 +655,18 @@ function showFE(id, msg) { const e = $(id); if (msg) e.textContent = msg; e.clas
 function clearFE(id) { $(id).classList.remove('on'); }
 
 function resetForm() {
+  currentRole = null;
+  $('roleStudent').classList.remove('active');
+  $('roleSupervisor').classList.remove('active');
   $('form').reset();
   $('pickedName').textContent = '';
   drop.classList.remove('picked');
   $('success').classList.remove('on');
   $('formWrap').style.display = '';
   $('errBox').classList.remove('on');
+  document.querySelectorAll('.student-field, .supervisor-field, .common-field').forEach(el => {
+    el.classList.add('hidden');
+  });
 }
 </script>
 </body>
