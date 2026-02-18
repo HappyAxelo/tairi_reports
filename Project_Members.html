@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Supervisor Portal | TAIRI</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:#0f1117;--paper:#fafaf8;--accent:#16a34a;--light:#f0fdf4;--muted:#6b7280;--border:#e5e7eb;--green:#16a34a;--red:#dc2626;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
+  
+  header{border-bottom:1px solid var(--border);padding:1.25rem 2rem;display:flex;align-items:center;justify-content:space-between;background:#fff}
+  .logo{font-family:'DM Serif Display',serif;font-size:1.35rem;color:var(--accent);letter-spacing:-.02em}
+  .logo span{color:var(--ink)}
+  header nav a{font-size:.85rem;color:var(--muted);text-decoration:none;border:1px solid var(--border);padding:.4rem .9rem;border-radius:6px;transition:all .15s}
+  header nav a:hover{color:var(--ink);border-color:var(--ink)}
+  
+  .hero{background:linear-gradient(135deg,#065f46 0%,#16a34a 60%,#22c55e 100%);color:#fff;padding:3.5rem 2rem 3rem;text-align:center}
+  .hero h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,5vw,2.8rem);font-weight:400;line-height:1.15;margin-bottom:.75rem}
+  .hero p{opacity:.82;font-size:1rem;max-width:520px;margin:0 auto}
+  
+  main{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:2.5rem 1rem 4rem}
+  .card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:2.5rem;width:100%;max-width:560px;box-shadow:0 4px 32px rgba(0,0,0,.06)}
+  .card-title{font-size:1.15rem;font-weight:600;margin-bottom:1.75rem;padding-bottom:.75rem;border-bottom:1px solid var(--border);color:var(--ink)}
+  
+  .field{margin-bottom:1.25rem}
+  label{display:block;font-size:.82rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin-bottom:.45rem}
+  input[type=text],select{width:100%;padding:.72rem 1rem;border:1.5px solid var(--border);border-radius:8px;font-size:.95rem;font-family:inherit;color:var(--ink);background:#fff;transition:border-color .15s,box-shadow .15s;appearance:none}
+  input[type=text]:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(22,163,74,.12)}
+  .select-wrap{position:relative}
+  .select-wrap::after{content:'▾';position:absolute;right:1rem;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--muted);font-size:.85rem}
+  
+  .drop{border:2px dashed var(--border);border-radius:10px;padding:2rem 1.5rem;text-align:center;cursor:pointer;transition:all .2s;position:relative;background:var(--paper)}
+  .drop:hover,.drop.over{border-color:var(--accent);background:var(--light)}
+  .drop input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+  .drop-ico{font-size:2rem;margin-bottom:.5rem}
+  .drop p{font-size:.9rem;color:var(--muted)}
+  .drop strong{color:var(--accent)}
+  .drop .hint{font-size:.78rem;margin-top:.4rem;color:#9ca3af}
+  .drop.picked{border-color:var(--green);background:#f0fdf4}
+  .picked-name{color:var(--green);font-weight:600;font-size:.85rem;margin-top:.6rem}
+  
+  .btn{width:100%;padding:.875rem;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:1rem;font-weight:600;font-family:inherit;cursor:pointer;margin-top:.5rem;transition:background .15s,transform .1s;display:flex;align-items:center;justify-content:center;gap:.5rem}
+  .btn:hover{background:#15803d}
+  .btn:active{transform:scale(.99)}
+  .btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
+  .spin{width:16px;height:16px;border:2.5px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  
+  .alert{display:none;padding:.85rem 1rem;border-radius:8px;font-size:.88rem;margin-bottom:1rem}
+  .alert.on{display:block}
+  .alert-err{background:#fef2f2;color:var(--red);border:1px solid #fecaca}
+  .fe{color:var(--red);font-size:.78rem;margin-top:.3rem;display:none}
+  .fe.on{display:block}
+  input.bad,select.bad{border-color:var(--red)!important}
+  
+  .success{display:none;text-align:center;padding:1rem 0}
+  .success.on{display:block}
+  .s-ico{font-size:3.5rem;margin-bottom:.75rem}
+  .success h2{font-family:'DM Serif Display',serif;font-size:1.6rem;color:var(--green);margin-bottom:.4rem}
+  .success p{color:var(--muted);font-size:.92rem;line-height:1.6}
+  .rec{background:var(--paper);border:1px solid var(--border);border-radius:10px;padding:1rem 1.2rem;margin:1.2rem 0;text-align:left}
+  .rec p{font-size:.875rem;margin:.3rem 0}
+  .rec strong{color:var(--ink)}
+  .btn-new{margin-top:.5rem;background:transparent;color:var(--accent);border:1.5px solid var(--accent);border-radius:8px;padding:.72rem 1.5rem;font-size:.95rem;font-weight:600;font-family:inherit;cursor:pointer;transition:all .15s}
+  .btn-new:hover{background:var(--light)}
+  
+  .prog-wrap{margin-top:.75rem;display:none}
+  .prog-wrap.on{display:block}
+  .prog-bar{height:4px;background:var(--border);border-radius:4px;overflow:hidden}
+  .prog-fill{height:100%;width:0%;background:var(--accent);border-radius:4px;transition:width .3s}
+  .prog-txt{font-size:.78rem;color:var(--muted);margin-top:.4rem;text-align:center}
+  
+  footer{border-top:1px solid var(--border);padding:1.25rem 2rem;text-align:center;font-size:.8rem;color:var(--muted)}
+  footer a{color:var(--muted)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">👨‍🏫 <span>Supervisor Portal</span></div>
+  <nav><a href="index.html">← Back</a></nav>
+</header>
+
+<div class="hero">
+  <h1>Supervisor Report Submission</h1>
+  <p>Submit your monthly supervisor report</p>
+</div>
+
+<main>
+  <div class="card">
+    <div class="success" id="success">
+      <div class="s-ico">✅</div>
+      <h2>Report Submitted!</h2>
+      <p>Your monthly report has been received successfully.</p>
+      <div class="rec" id="rec"></div>
+      <button class="btn-new" onclick="resetForm()">Submit Another Report</button>
+    </div>
+
+    <div id="formWrap">
+      <div class="card-title">📋 Submission Details</div>
+      <div class="alert alert-err" id="errBox"></div>
+
+      <form id="form" novalidate>
+        <div class="field">
+          <label>Supervisor Name</label>
+          <div class="select-wrap">
+            <select id="supervisorName">
+              <option value="">Select your name</option>
+              <option>Prof Richard Musabe</option>
+              <option>Prof Nadine Rujeni</option>
+              <option>Prof Ignace Gatare</option>
+              <option>Prof Kizito Nkurikiyeyezu</option>
+              <option>Prof Aime Tsinda</option>
+              <option>Dr Umuhoza Noella Karemera Josiane</option>
+              <option>Dr Myriam Mujawamariya</option>
+              <option>Dr Jimmy Nsenga</option>
+              <option>Dr Evariste Twahirwa</option>
+              <option>Dr Innocent nkurikiyimfura</option>
+              <option>Munezero Immacuele Joselyne</option>
+              <option>Ngabo Desire</option>
+            </select>
+          </div>
+          <div class="fe" id="e-supervisorName">Please select your name.</div>
+        </div>
+
+        <div class="field">
+          <label>Month</label>
+          <div class="select-wrap">
+            <select id="month">
+              <option value="">Select month</option>
+              <option>January</option><option>February</option><option>March</option>
+              <option>April</option><option>May</option><option>June</option>
+              <option>July</option><option>August</option><option>September</option>
+              <option>October</option><option>November</option><option>December</option>
+            </select>
+          </div>
+          <div class="fe" id="e-month">Please select a month.</div>
+        </div>
+
+        <div class="field">
+          <label>Report File</label>
+          <div class="drop" id="drop">
+            <input type="file" id="pdf" accept=".pdf,.xlsx,.xls,application/pdf,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"/>
+            <div class="drop-ico">📄</div>
+            <p><strong>Click to browse</strong> or drag &amp; drop here</p>
+            <div class="hint">PDF or Excel files · Maximum 10 MB</div>
+            <div class="picked-name" id="pickedName"></div>
+          </div>
+          <div class="prog-wrap" id="progWrap">
+            <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
+            <div class="prog-txt" id="progTxt">Uploading…</div>
+          </div>
+          <div class="fe" id="e-file">Please select a file (max 10 MB).</div>
+        </div>
+
+        <button type="submit" class="btn" id="submitBtn">Submit Report</button>
+      </form>
+    </div>
+  </div>
+</main>
+
+<footer>&copy; 2026 TAIRI Report Portal · <a href="admin.html">Admin Access</a></footer>
+
+<script>
+const CLOUDINARY_CLOUD_NAME='dbdebgq1p',CLOUDINARY_UPLOAD_PRESET='tairi_reports';
+const $=id=>document.getElementById(id),pdf=$('pdf'),drop=$('drop');
+
+drop.addEventListener('dragover',e=>{e.preventDefault();drop.classList.add('over')});
+drop.addEventListener('dragleave',()=>drop.classList.remove('over'));
+drop.addEventListener('drop',e=>{e.preventDefault();drop.classList.remove('over');const f=e.dataTransfer.files[0];if(!f)return;const dt=new DataTransfer();dt.items.add(f);pdf.files=dt.files;checkFile()});
+pdf.addEventListener('change',checkFile);
+
+function checkFile(){const f=pdf.files[0];if(!f)return;const ext=f.name.toLowerCase().split('.').pop(),validTypes=['pdf','xlsx','xls'],validMimes=['application/pdf','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','application/vnd.ms-excel'],isValid=validTypes.includes(ext)||validMimes.includes(f.type),isOk=f.size<=10*1024*1024;if(!isValid){showFE('e-file','Only PDF or Excel files allowed.');pdf.value='';return}if(!isOk){showFE('e-file','File too large. Max 10 MB.');pdf.value='';return}clearFE('e-file');drop.classList.add('picked');$('pickedName').textContent=`✅ ${f.name} · ${(f.size/1024/1024).toFixed(2)} MB`}
+
+$('form').addEventListener('submit',async e=>{e.preventDefault();if(!validate())return;const btn=$('submitBtn');btn.disabled=true;btn.innerHTML='<div class="spin"></div> Uploading…';$('errBox').classList.remove('on');try{const fileExt=pdf.files[0].name.split('.').pop().toLowerCase(),supervisorName=$('supervisorName').value,cleanName=supervisorName.replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_]/g,''),month=$('month').value,folder=`tairi_reports/supervisors/${month}`,pubId=`Supervisor_${cleanName}_${month}`,submission={id:Date.now().toString(),type:'supervisor',supervisorName,month,filename:pubId+'.'+fileExt,fileSize:pdf.files[0].size,submittedAt:new Date().toISOString()},formData=new FormData();formData.append('file',pdf.files[0]);formData.append('upload_preset',CLOUDINARY_UPLOAD_PRESET);formData.append('public_id',pubId);formData.append('folder',folder);formData.append('resource_type','raw');$('progWrap').classList.add('on');const result=await uploadWithProgress(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/raw/upload`,formData);submission.fileUrl=result.secure_url;saveSubmission(submission);showSuccess(submission)}catch(err){$('errBox').textContent=err.message||'Upload failed. Try again.';$('errBox').classList.add('on');console.error(err)}finally{btn.disabled=false;btn.innerHTML='Submit Report';$('progWrap').classList.remove('on');$('progFill').style.width='0%'}});
+
+function uploadWithProgress(url,formData){return new Promise((resolve,reject)=>{const xhr=new XMLHttpRequest();xhr.open('POST',url);xhr.upload.addEventListener('progress',e=>{if(e.lengthComputable){const pct=Math.round((e.loaded/e.total)*100);$('progFill').style.width=pct+'%';$('progTxt').textContent=`Uploading… ${pct}%`}});xhr.addEventListener('load',()=>{if(xhr.status>=200&&xhr.status<300)resolve(JSON.parse(xhr.responseText));else{const err=JSON.parse(xhr.responseText);reject(new Error(err.error?.message||`Upload failed (${xhr.status})`))}});xhr.addEventListener('error',()=>reject(new Error('Network error.')));xhr.send(formData)})}
+
+function saveSubmission(sub){const existing=JSON.parse(localStorage.getItem('tairi_submissions')||'[]');existing.push(sub);localStorage.setItem('tairi_submissions',JSON.stringify(existing))}
+
+function showSuccess(sub){$('formWrap').style.display='none';$('success').classList.add('on');$('rec').innerHTML=`<p><strong>Type:</strong> Supervisor Report</p><p><strong>Supervisor:</strong> ${sub.supervisorName}</p><p><strong>Month:</strong> ${sub.month}</p><p><strong>File:</strong> ${sub.filename}</p><p><strong>Submitted:</strong> ${new Date(sub.submittedAt).toLocaleString()}</p>`}
+
+function validate(){let ok=true;if(!$('supervisorName').value){showFE('e-supervisorName');$('supervisorName').classList.add('bad');ok=false}else{clearFE('e-supervisorName');$('supervisorName').classList.remove('bad')}if(!$('month').value){showFE('e-month');$('month').classList.add('bad');ok=false}else{clearFE('e-month');$('month').classList.remove('bad')}if(!pdf.files[0]){showFE('e-file','Please select a file.');ok=false}return ok}
+
+function showFE(id,msg){const e=$(id);if(msg)e.textContent=msg;e.classList.add('on')}
+function clearFE(id){$(id).classList.remove('on')}
+
+function resetForm(){$('form').reset();$('pickedName').textContent='';drop.classList.remove('picked');$('success').classList.remove('on');$('formWrap').style.display='';$('errBox').classList.remove('on')}
+</script>
+</body>
+</html>
