@@ -203,6 +203,8 @@
   code { background: #f3f4f6; padding: .15rem .45rem; border-radius: 4px; font-size: .82rem; font-family: monospace; }
 
   .badge { display: inline-block; padding: .22rem .65rem; border-radius: 20px; font-size: .75rem; font-weight: 600; }
+  .badge-student { background: #dbeafe; color: #1d4ed8; }
+  .badge-supervisor { background: #f0fdf4; color: #16a34a; }
   .badge-m { background: #ede9fe; color: #7c3aed; }
   .badge-p { background: #dbeafe; color: #1d4ed8; }
 
@@ -257,7 +259,7 @@
 <!-- ── LOGIN SCREEN ──────────────────────────────────────── -->
 <div id="loginScreen">
   <div class="login-card">
-    <div class="login-logo">TAIRI</div>
+    <div class="login-logo">🎓 TAIRI</div>
     <div class="login-sub">Report Portal — Admin Access</div>
 
     <div class="login-err" id="loginErr"></div>
@@ -271,8 +273,10 @@
     </form>
 
     <div class="login-hint">
+      Default password: <strong>tairi2025</strong><br>
+      <small>(Change it in the script CONFIG section)</small>
     </div>
-    <a href="index.html" class="back-link">← Back to Student Portal</a>
+    <a href="index.html" class="back-link">← Back to Portal</a>
   </div>
 </div>
 
@@ -282,7 +286,7 @@
   <nav>
     <div class="nav-brand">TAIRI <span>Admin</span></div>
     <div class="nav-right">
-      <span class="nav-user"> Administrator</span>
+      <span class="nav-user">👤 Administrator</span>
       <button class="btn-out" onclick="logout()">Sign Out</button>
     </div>
   </nav>
@@ -291,17 +295,16 @@
 
     <!-- Notice if no submissions yet -->
     <div id="noData">
-      <strong> No submissions yet</strong>
-      When students submit reports via <strong>index.html</strong>, they'll appear here automatically.
-      Make sure both files are in the same GitHub Pages repo.
+      <strong>📭 No submissions yet</strong>
+      When students and supervisors submit reports via <strong>index.html</strong>, they'll appear here automatically.
     </div>
 
     <!-- Stats -->
     <div class="stats" id="statsGrid">
-      <div class="sc"><div class="sc-label">Total Submissions</div><div class="sc-value c-blue"  id="sTotal">0</div></div>
-      <div class="sc"><div class="sc-label">Masters</div>          <div class="sc-value c-green" id="sMasters">0</div></div>
-      <div class="sc"><div class="sc-label">PhD</div>              <div class="sc-value c-orange" id="sPhD">0</div></div>
-      <div class="sc"><div class="sc-label">This Month</div>       <div class="sc-value c-purple" id="sThisMonth">0</div></div>
+      <div class="sc"><div class="sc-label">Total Reports</div>      <div class="sc-value c-blue"  id="sTotal">0</div></div>
+      <div class="sc"><div class="sc-label">Student Reports</div>    <div class="sc-value c-green" id="sStudent">0</div></div>
+      <div class="sc"><div class="sc-label">Supervisor Reports</div><div class="sc-value c-orange" id="sSupervisor">0</div></div>
+      <div class="sc"><div class="sc-label">This Month</div>         <div class="sc-value c-purple" id="sThisMonth">0</div></div>
     </div>
 
     <!-- Toolbar -->
@@ -309,6 +312,14 @@
       <div class="tf">
         <label>Search</label>
         <input type="text" id="fSearch" placeholder="Name or reg. number…"/>
+      </div>
+      <div class="tf">
+        <label>Type</label>
+        <select id="fType">
+          <option value="">All Types</option>
+          <option value="student">Student Reports</option>
+          <option value="supervisor">Supervisor Reports</option>
+        </select>
       </div>
       <div class="tf">
         <label>Program</label>
@@ -328,15 +339,15 @@
           <option>October</option><option>November</option><option>December</option>
         </select>
       </div>
-      <button class="btn-search" onclick="render(1)">Search</button>
+      <button class="btn-search" onclick="render(1)">🔍 Search</button>
       <button class="btn-reset"  onclick="resetFilters()">Reset</button>
-      <button class="btn-export" onclick="exportCSV()"> Export CSV</button>
+      <button class="btn-export" onclick="exportCSV()">⬇ Export CSV</button>
     </div>
 
     <!-- Table -->
     <div class="table-card">
       <div class="table-head">
-        <h2>Submissions</h2>
+        <h2>All Submissions</h2>
         <span class="count-badge" id="countBadge">0 records</span>
       </div>
       <div class="table-wrap">
@@ -344,9 +355,11 @@
           <thead>
             <tr>
               <th>#</th>
-              <th>Student Name</th>
+              <th>Type</th>
+              <th>Name</th>
               <th>Reg. Number</th>
               <th>Program</th>
+              <th>Supervisor</th>
               <th>Month</th>
               <th>Size</th>
               <th>Submitted</th>
@@ -364,9 +377,9 @@
 
 <script>
 // ════════════════════════════════════════════════════════════
-//   CONFIG
+//  ⚙️  CONFIG
 // ════════════════════════════════════════════════════════════
-const ADMIN_PASSWORD = 'tairi2025';   // ← CHANGE THIS to your own password
+const ADMIN_PASSWORD = 'tairi2025';   // ← CHANGE THIS
 // ════════════════════════════════════════════════════════════
 
 const $ = id => document.getElementById(id);
@@ -412,28 +425,31 @@ function getAll() {
 
 function filtered() {
   const search = $('fSearch').value.trim().toLowerCase();
+  const type   = $('fType').value;
   const prog   = $('fProg').value;
   const month  = $('fMonth').value;
 
   return getAll().filter(s => {
-    const matchSearch = !search ||
-      s.fullName.toLowerCase().includes(search) ||
-      s.regNum.toLowerCase().includes(search);
+    const matchSearch = !search || 
+      (s.fullName && s.fullName.toLowerCase().includes(search)) ||
+      (s.regNum && s.regNum.toLowerCase().includes(search)) ||
+      (s.supervisorName && s.supervisorName.toLowerCase().includes(search));
+    const matchType  = !type  || s.type === type;
     const matchProg  = !prog  || s.program === prog;
-    const matchMonth = !month || s.month   === month;
-    return matchSearch && matchProg && matchMonth;
+    const matchMonth = !month || s.month === month;
+    return matchSearch && matchType && matchProg && matchMonth;
   }).sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt));
 }
 
 // ── Stats ─────────────────────────────────────────────────
 function updateStats() {
-  const all     = getAll();
+  const all       = getAll();
   const thisMonth = new Date().toLocaleString('en',{month:'long'});
 
-  $('sTotal').textContent    = all.length;
-  $('sMasters').textContent  = all.filter(s => s.program === 'Masters').length;
-  $('sPhD').textContent      = all.filter(s => s.program === 'PhD').length;
-  $('sThisMonth').textContent = all.filter(s => s.month  === thisMonth).length;
+  $('sTotal').textContent      = all.length;
+  $('sStudent').textContent    = all.filter(s => s.type === 'student').length;
+  $('sSupervisor').textContent = all.filter(s => s.type === 'supervisor').length;
+  $('sThisMonth').textContent  = all.filter(s => s.month === thisMonth).length;
 
   if (all.length === 0) $('noData').classList.add('on');
   else $('noData').classList.remove('on');
@@ -452,27 +468,50 @@ function render(page) {
 
   if (!slice.length) {
     $('tbody').innerHTML = `
-      <tr><td colspan="8">
+      <tr><td colspan="10">
         <div class="empty">
-          <div class="eico"></div>
+          <div class="eico">📭</div>
           <p>${total === 0 && getAll().length > 0 ? 'No results match your filters.' : 'No submissions yet.'}</p>
         </div>
       </td></tr>`;
   } else {
-    $('tbody').innerHTML = slice.map((s, i) => `
-      <tr>
-        <td>${start + i + 1}</td>
-        <td><strong>${esc(s.fullName)}</strong></td>
-        <td><code>${esc(s.regNum)}</code></td>
-        <td><span class="badge ${s.program === 'Masters' ? 'badge-m' : 'badge-p'}">${s.program}</span></td>
-        <td>${s.month}</td>
-        <td>${s.fileSize ? (s.fileSize / 1024).toFixed(0) + ' KB' : '—'}</td>
-        <td>${formatDate(s.submittedAt)}</td>
-        <td>
-          <a class="btn-view" href="${esc(s.fileUrl)}" target="_blank" rel="noopener">📄 Open PDF</a>
-          <button class="btn-del" onclick="del('${s.id}', '${esc(s.fullName)}')">🗑</button>
-        </td>
-      </tr>`).join('');
+    $('tbody').innerHTML = slice.map((s, i) => {
+      if (s.type === 'student') {
+        return `
+          <tr>
+            <td>${start + i + 1}</td>
+            <td><span class="badge badge-student">Student</span></td>
+            <td><strong>${esc(s.fullName)}</strong></td>
+            <td><code>${esc(s.regNum)}</code></td>
+            <td><span class="badge ${s.program === 'Masters' ? 'badge-m' : 'badge-p'}">${s.program}</span></td>
+            <td>${esc(s.supervisor)}</td>
+            <td>${s.month}</td>
+            <td>${s.fileSize ? (s.fileSize / 1024).toFixed(0) + ' KB' : '—'}</td>
+            <td>${formatDate(s.submittedAt)}</td>
+            <td>
+              <a class="btn-view" href="${esc(s.fileUrl)}" target="_blank" rel="noopener">📄 Open</a>
+              <button class="btn-del" onclick="del('${s.id}', '${esc(s.fullName)}')">🗑</button>
+            </td>
+          </tr>`;
+      } else {
+        return `
+          <tr>
+            <td>${start + i + 1}</td>
+            <td><span class="badge badge-supervisor">Supervisor</span></td>
+            <td><strong>${esc(s.supervisorName)}</strong></td>
+            <td>—</td>
+            <td>—</td>
+            <td>—</td>
+            <td>${s.month}</td>
+            <td>${s.fileSize ? (s.fileSize / 1024).toFixed(0) + ' KB' : '—'}</td>
+            <td>${formatDate(s.submittedAt)}</td>
+            <td>
+              <a class="btn-view" href="${esc(s.fileUrl)}" target="_blank" rel="noopener">📄 Open</a>
+              <button class="btn-del" onclick="del('${s.id}', '${esc(s.supervisorName)}')">🗑</button>
+            </td>
+          </tr>`;
+      }
+    }).join('');
   }
 
   // Pagination
@@ -484,7 +523,7 @@ function render(page) {
 
 // ── Delete ────────────────────────────────────────────────
 function del(id, name) {
-  if (!confirm(`Remove submission from "${name}"?\n\nNote: This only removes it from this list. The file in Cloudinary still exists.`)) return;
+  if (!confirm(`Remove submission from "${name}"?\n\nNote: The file in Cloudinary still exists.`)) return;
   const updated = getAll().filter(s => s.id !== id);
   localStorage.setItem('tairi_submissions', JSON.stringify(updated));
   updateStats();
@@ -495,16 +534,36 @@ function del(id, name) {
 function exportCSV() {
   const data = filtered();
   if (!data.length) { alert('No data to export.'); return; }
-  const header = ['Name', 'Reg Number', 'Program', 'Month', 'File Size (KB)', 'Submitted', 'File URL'];
-  const rows   = data.map(s => [
-    `"${s.fullName}"`,
-    `"${s.regNum}"`,
-    s.program,
-    s.month,
-    s.fileSize ? (s.fileSize / 1024).toFixed(0) : '',
-    new Date(s.submittedAt).toLocaleString(),
-    `"${s.fileUrl}"`,
-  ]);
+  
+  const header = ['Type', 'Name', 'Reg Number', 'Program', 'Supervisor', 'Month', 'File Size (KB)', 'Submitted', 'File URL'];
+  const rows   = data.map(s => {
+    if (s.type === 'student') {
+      return [
+        'Student',
+        `"${s.fullName}"`,
+        `"${s.regNum}"`,
+        s.program,
+        `"${s.supervisor}"`,
+        s.month,
+        s.fileSize ? (s.fileSize / 1024).toFixed(0) : '',
+        new Date(s.submittedAt).toLocaleString(),
+        `"${s.fileUrl}"`,
+      ];
+    } else {
+      return [
+        'Supervisor',
+        `"${s.supervisorName}"`,
+        '',
+        '',
+        '',
+        s.month,
+        s.fileSize ? (s.fileSize / 1024).toFixed(0) : '',
+        new Date(s.submittedAt).toLocaleString(),
+        `"${s.fileUrl}"`,
+      ];
+    }
+  });
+  
   const csv  = [header, ...rows].map(r => r.join(',')).join('\n');
   const blob = new Blob([csv], { type: 'text/csv' });
   const a    = document.createElement('a');
@@ -526,6 +585,7 @@ function esc(s) {
 
 function resetFilters() {
   $('fSearch').value = '';
+  $('fType').value   = '';
   $('fProg').value   = '';
   $('fMonth').value  = '';
   render(1);
@@ -534,7 +594,6 @@ function resetFilters() {
 function init() {
   updateStats();
   render(1);
-  // Allow Enter key in search box
   $('fSearch').addEventListener('keydown', e => { if (e.key === 'Enter') render(1); });
 }
 </script>
