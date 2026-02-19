@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Supervisor Portal | TAIRI</title>
+<title>Project Team Member Portal | TAIRI</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -81,13 +81,13 @@
 <body>
 
 <header>
-  <div class="logo"><span>Supervisor Portal</span></div>
+  <div class="logo"><span>Project Team MemberPortal</span></div>
   <nav><a href="index.html">← Back</a></nav>
 </header>
 
 <div class="hero">
-  <h1>Supervisor Report Submission</h1>
-  <p>Submit your monthly supervisor report</p>
+  <h1>Project Team MemberReport Submission</h1>
+  <p>Submit your monthly Project Team Member report</p>
 </div>
 
 <main>
@@ -106,7 +106,7 @@
 
       <form id="form" novalidate>
         <div class="field">
-          <label>Supervisor Name</label>
+          <label>Project Team Member Name</label>
           <div class="select-wrap">
             <select id="supervisorName">
               <option value="">Select your name</option>
@@ -182,7 +182,7 @@ function uploadWithProgress(url,formData){return new Promise((resolve,reject)=>{
 
 function saveSubmission(sub){const existing=JSON.parse(localStorage.getItem('tairi_submissions')||'[]');existing.push(sub);localStorage.setItem('tairi_submissions',JSON.stringify(existing))}
 
-function showSuccess(sub){$('formWrap').style.display='none';$('success').classList.add('on');$('rec').innerHTML=`<p><strong>Type:</strong> Supervisor Report</p><p><strong>Supervisor:</strong> ${sub.supervisorName}</p><p><strong>Month:</strong> ${sub.month}</p><p><strong>File:</strong> ${sub.filename}</p><p><strong>Submitted:</strong> ${new Date(sub.submittedAt).toLocaleString()}</p>`}
+function showSuccess(sub){$('formWrap').style.display='none';$('success').classList.add('on');$('rec').innerHTML=`<p><strong>Type:</strong> Project Team MemberReport</p><p><strong>Supervisor:</strong> ${sub.supervisorName}</p><p><strong>Month:</strong> ${sub.month}</p><p><strong>File:</strong> ${sub.filename}</p><p><strong>Submitted:</strong> ${new Date(sub.submittedAt).toLocaleString()}</p>`}
 
 function validate(){let ok=true;if(!$('supervisorName').value){showFE('e-supervisorName');$('supervisorName').classList.add('bad');ok=false}else{clearFE('e-supervisorName');$('supervisorName').classList.remove('bad')}if(!$('month').value){showFE('e-month');$('month').classList.add('bad');ok=false}else{clearFE('e-month');$('month').classList.remove('bad')}if(!pdf.files[0]){showFE('e-file','Please select a file.');ok=false}return ok}
 
