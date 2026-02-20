@@ -240,7 +240,7 @@
 <body>
 
 <header>
-  <div class="logo">👨‍🏫 <span>Project Team Member Portal</span></div>
+  <div class="logo"> <span>Project Team Member Portal</span></div>
 </header>
 
 <div class="hero">
@@ -252,7 +252,7 @@
   <div class="card">
     <!-- Success Screen -->
     <div class="success" id="success">
-      <div class="s-ico">✅</div>
+      <div class="s-ico"></div>
       <h2>Report Submitted!</h2>
       <p>Your monthly report has been received successfully.</p>
       <div class="rec" id="rec"></div>
@@ -261,7 +261,7 @@
 
     <!-- Form -->
     <div id="formWrap">
-      <div class="card-title">📋 Submission Details</div>
+      <div class="card-title">Submission Details</div>
       <div class="alert alert-err" id="errBox"></div>
 
       <form id="form" novalidate>
@@ -326,7 +326,7 @@
           <label>Report File</label>
           <div class="drop" id="drop">
             <input type="file" id="pdf" accept=".pdf,.xlsx,.xls,application/pdf,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"/>
-            <div class="drop-ico">📄</div>
+            <div class="drop-ico"></div>
             <p><strong>Click to browse</strong> or drag &amp; drop here</p>
             <div class="hint">PDF or Excel files · Maximum 10 MB</div>
             <div class="picked-name" id="pickedName"></div>
@@ -413,7 +413,7 @@ function checkFile() {
   
   clearFE('e-file');
   drop.classList.add('picked');
-  $('pickedName').textContent = `✅ ${f.name} · ${(f.size/1024/1024).toFixed(2)} MB`;
+  $('pickedName').textContent = `${f.name} · ${(f.size/1024/1024).toFixed(2)} MB`;
 }
 
 // ══════════════════════════════════════════════════════════════
