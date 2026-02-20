@@ -6,264 +6,92 @@
 <title>Admin Dashboard | TAIRI Reports</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --ink:    #0f1117;
-    --bg:     #f5f5f3;
-    --card:   #ffffff;
-    --accent: #2563eb;
-    --light:  #eff6ff;
-    --muted:  #6b7280;
-    --border: #e5e7eb;
-    --green:  #16a34a;
-    --red:    #dc2626;
-    --orange: #d97706;
-    --purple: #7c3aed;
-  }
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg);
-    color: var(--ink);
-    min-height: 100vh;
-  }
-
-  /* ── Login Screen ─────────────────────────────── */
-  #loginScreen {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, #1e3a8a, #2563eb);
-    padding: 1rem;
-  }
-  .login-card {
-    background: #fff;
-    border-radius: 16px;
-    padding: 2.5rem;
-    width: 100%;
-    max-width: 380px;
-    box-shadow: 0 20px 60px rgba(0,0,0,.25);
-  }
-  .login-logo {
-    font-family: 'DM Serif Display', serif;
-    font-size: 1.5rem;
-    color: var(--accent);
-    margin-bottom: .25rem;
-  }
-  .login-sub { font-size: .85rem; color: var(--muted); margin-bottom: 1.75rem; }
-  .lf { margin-bottom: 1rem; }
-  .lf label { display: block; font-size: .8rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); margin-bottom: .4rem; }
-  .lf input {
-    width: 100%; padding: .72rem 1rem;
-    border: 1.5px solid var(--border); border-radius: 8px;
-    font-size: .95rem; font-family: inherit;
-    transition: border-color .15s;
-  }
-  .lf input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,.12); }
-  .btn-login {
-    width: 100%; padding: .875rem;
-    background: var(--accent); color: #fff;
-    border: none; border-radius: 8px;
-    font-size: 1rem; font-weight: 600; font-family: inherit;
-    cursor: pointer; transition: background .15s;
-    margin-top: .25rem;
-  }
-  .btn-login:hover { background: #1d4ed8; }
-  .login-err { background: #fef2f2; color: var(--red); border: 1px solid #fecaca; padding: .65rem .9rem; border-radius: 6px; font-size: .85rem; margin-bottom: 1rem; display: none; }
-  .login-err.on { display: block; }
-  .login-hint { font-size: .8rem; color: var(--muted); text-align: center; margin-top: 1.2rem; }
-  .back-link { color: var(--accent); text-decoration: none; font-size: .85rem; display: inline-block; margin-top: .75rem; }
-
-  /* ── Dashboard Layout ─────────────────────────── */
-  #dashboard { display: none; }
-  #dashboard.on { display: block; }
-
-  nav {
-    background: #fff;
-    border-bottom: 1px solid var(--border);
-    padding: 0 2rem;
-    height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: 0 1px 4px rgba(0,0,0,.05);
-  }
-  .nav-brand {
-    font-family: 'DM Serif Display', serif;
-    font-size: 1.2rem;
-    color: var(--accent);
-  }
-  .nav-brand span { color: var(--ink); }
-  .nav-right { display: flex; align-items: center; gap: 1rem; }
-  .nav-user { font-size: .85rem; color: var(--muted); }
-  .btn-out {
-    font-size: .82rem; padding: .38rem .9rem;
-    border: 1.5px solid var(--border); border-radius: 6px;
-    background: transparent; cursor: pointer; font-family: inherit;
-    color: var(--muted); transition: all .15s;
-  }
-  .btn-out:hover { border-color: var(--red); color: var(--red); }
-
-  main { padding: 2rem; max-width: 1280px; margin: 0 auto; }
-
-  /* ── Stat Cards ───────────────────────────────── */
-  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
-  .sc {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 1.4rem 1.5rem;
-    transition: box-shadow .2s;
-  }
-  .sc:hover { box-shadow: 0 4px 16px rgba(0,0,0,.07); }
-  .sc-label { font-size: .75rem; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); margin-bottom: .5rem; }
-  .sc-value { font-size: 2.2rem; font-weight: 700; line-height: 1; }
-  .c-blue   { color: var(--accent); }
-  .c-green  { color: var(--green); }
-  .c-orange { color: var(--orange); }
-  .c-purple { color: var(--purple); }
-
-  /* ── Toolbar ──────────────────────────────────── */
-  .toolbar {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 1.25rem 1.5rem;
-    margin-bottom: 1.25rem;
-    display: flex;
-    flex-wrap: wrap;
-    gap: .85rem;
-    align-items: flex-end;
-  }
-  .tf { display: flex; flex-direction: column; gap: .3rem; }
-  .tf label { font-size: .75rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
-  .tf input, .tf select {
-    padding: .52rem .85rem;
-    border: 1.5px solid var(--border);
-    border-radius: 7px;
-    font-size: .875rem;
-    font-family: inherit;
-    color: var(--ink);
-    min-width: 150px;
-    transition: border-color .15s;
-  }
-  .tf input:focus, .tf select:focus { outline: none; border-color: var(--accent); }
-  .tf select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right .7rem center; padding-right: 2rem; }
-  .btn-search { padding: .55rem 1.3rem; background: var(--accent); color: #fff; border: none; border-radius: 7px; cursor: pointer; font-size: .875rem; font-weight: 600; font-family: inherit; transition: background .15s; }
-  .btn-search:hover { background: #1d4ed8; }
-  .btn-reset { padding: .55rem 1rem; background: transparent; color: var(--muted); border: 1.5px solid var(--border); border-radius: 7px; cursor: pointer; font-size: .875rem; font-family: inherit; }
-  .btn-reset:hover { border-color: var(--ink); color: var(--ink); }
-  .btn-export { padding: .55rem 1.1rem; background: #f0fdf4; color: var(--green); border: 1.5px solid #bbf7d0; border-radius: 7px; cursor: pointer; font-size: .875rem; font-weight: 600; font-family: inherit; margin-left: auto; }
-  .btn-export:hover { background: #dcfce7; }
-
-  /* ── Table ────────────────────────────────────── */
-  .table-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
-  }
-  .table-head {
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .table-head h2 { font-size: .95rem; font-weight: 600; }
-  .count-badge {
-    font-size: .8rem;
-    color: var(--muted);
-    background: var(--bg);
-    border: 1px solid var(--border);
-    padding: .2rem .7rem;
-    border-radius: 20px;
-  }
-  .table-wrap { overflow-x: auto; }
-  table { width: 100%; border-collapse: collapse; }
-  th {
-    background: #fafaf8;
-    text-align: left;
-    padding: .7rem 1rem;
-    font-size: .72rem;
-    font-weight: 700;
-    letter-spacing: .06em;
-    text-transform: uppercase;
-    color: var(--muted);
-    border-bottom: 1px solid var(--border);
-    white-space: nowrap;
-  }
-  td { padding: .9rem 1rem; border-bottom: 1px solid var(--border); font-size: .875rem; vertical-align: middle; }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: #fafaf8; }
-  code { background: #f3f4f6; padding: .15rem .45rem; border-radius: 4px; font-size: .82rem; font-family: monospace; }
-
-  .badge { display: inline-block; padding: .22rem .65rem; border-radius: 20px; font-size: .75rem; font-weight: 600; }
-  .badge-student { background: #dbeafe; color: #1d4ed8; }
-  .badge-supervisor { background: #f0fdf4; color: #16a34a; }
-  .badge-m { background: #ede9fe; color: #7c3aed; }
-  .badge-p { background: #dbeafe; color: #1d4ed8; }
-
-  .btn-view {
-    background: var(--light); color: var(--accent);
-    border: 1px solid #bfdbfe; border-radius: 5px;
-    padding: .3rem .75rem; cursor: pointer;
-    font-size: .8rem; font-family: inherit; font-weight: 600;
-    text-decoration: none; display: inline-block;
-  }
-  .btn-view:hover { background: #dbeafe; }
-  .btn-del {
-    background: #fef2f2; color: var(--red);
-    border: 1px solid #fecaca; border-radius: 5px;
-    padding: .3rem .75rem; cursor: pointer;
-    font-size: .8rem; font-family: inherit;
-    margin-left: .35rem;
-  }
-  .btn-del:hover { background: #fee2e2; }
-
-  /* ── Pagination ───────────────────────────────── */
-  .pag { padding: 1rem 1.5rem; border-top: 1px solid var(--border); display: flex; justify-content: center; gap: .4rem; flex-wrap: wrap; }
-  .pg-btn { padding: .38rem .8rem; border: 1.5px solid var(--border); border-radius: 6px; cursor: pointer; font-size: .875rem; background: #fff; font-family: inherit; transition: all .15s; }
-  .pg-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
-  .pg-btn:hover:not(.active) { background: var(--bg); }
-
-  /* ── Empty / Loading ──────────────────────────── */
-  .empty { padding: 4rem; text-align: center; color: var(--muted); }
-  .empty .eico { font-size: 2.5rem; margin-bottom: .75rem; }
-  .empty p { font-size: .9rem; }
-  .ld { padding: 3rem; text-align: center; color: var(--muted); font-size: .9rem; }
-
-  /* ── Quick setup notice ───────────────────────── */
-  #noData {
-    background: #fffbeb;
-    border: 1px solid #fde68a;
-    border-radius: 10px;
-    padding: 1.25rem 1.5rem;
-    margin-bottom: 1.5rem;
-    font-size: .875rem;
-    color: #92400e;
-    display: none;
-  }
-  #noData.on { display: block; }
-  #noData strong { display: block; margin-bottom: .4rem; font-size: .95rem; }
-
-  @media(max-width:640px) { main { padding: 1rem; } }
+  :root{--ink:#0f1117;--bg:#f5f5f3;--card:#ffffff;--accent:#2563eb;--light:#eff6ff;--muted:#6b7280;--border:#e5e7eb;--green:#16a34a;--red:#dc2626;--orange:#d97706;--purple:#7c3aed}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
+  
+  #loginScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1e3a8a,#2563eb);padding:1rem}
+  .login-card{background:#fff;border-radius:16px;padding:2.5rem;width:100%;max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+  .login-logo{font-family:'DM Serif Display',serif;font-size:1.5rem;color:var(--accent);margin-bottom:.25rem}
+  .login-sub{font-size:.85rem;color:var(--muted);margin-bottom:1.75rem}
+  .lf{margin-bottom:1rem}
+  .lf label{display:block;font-size:.8rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem}
+  .lf input{width:100%;padding:.72rem 1rem;border:1.5px solid var(--border);border-radius:8px;font-size:.95rem;font-family:inherit;transition:border-color .15s}
+  .lf input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+  .btn-login{width:100%;padding:.875rem;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:1rem;font-weight:600;font-family:inherit;cursor:pointer;transition:background .15s;margin-top:.25rem}
+  .btn-login:hover{background:#1d4ed8}
+  .login-err{background:#fef2f2;color:var(--red);border:1px solid #fecaca;padding:.65rem .9rem;border-radius:6px;font-size:.85rem;margin-bottom:1rem;display:none}
+  .login-err.on{display:block}
+  .login-hint{font-size:.8rem;color:var(--muted);text-align:center;margin-top:1.2rem}
+  
+  #dashboard{display:none}
+  #dashboard.on{display:block}
+  nav{background:#fff;border-bottom:1px solid var(--border);padding:0 2rem;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+  .nav-brand{font-family:'DM Serif Display',serif;font-size:1.2rem;color:var(--accent)}
+  .nav-brand span{color:var(--ink)}
+  .nav-right{display:flex;align-items:center;gap:1rem}
+  .nav-user{font-size:.85rem;color:var(--muted)}
+  .btn-out{font-size:.82rem;padding:.38rem .9rem;border:1.5px solid var(--border);border-radius:6px;background:transparent;cursor:pointer;font-family:inherit;color:var(--muted);transition:all .15s}
+  .btn-out:hover{border-color:var(--red);color:var(--red)}
+  
+  main{padding:2rem;max-width:1280px;margin:0 auto}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:2rem}
+  .sc{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.4rem 1.5rem;transition:box-shadow .2s}
+  .sc:hover{box-shadow:0 4px 16px rgba(0,0,0,.07)}
+  .sc-label{font-size:.75rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem}
+  .sc-value{font-size:2.2rem;font-weight:700;line-height:1}
+  .c-blue{color:var(--accent)}.c-green{color:var(--green)}.c-orange{color:var(--orange)}.c-purple{color:var(--purple)}
+  
+  .toolbar{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:1.25rem;display:flex;flex-wrap:wrap;gap:.85rem;align-items:flex-end}
+  .tf{display:flex;flex-direction:column;gap:.3rem}
+  .tf label{font-size:.75rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+  .tf input,.tf select{padding:.52rem .85rem;border:1.5px solid var(--border);border-radius:7px;font-size:.875rem;font-family:inherit;color:var(--ink);min-width:150px;transition:border-color .15s}
+  .tf input:focus,.tf select:focus{outline:none;border-color:var(--accent)}
+  .tf select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .7rem center;padding-right:2rem}
+  .btn-search{padding:.55rem 1.3rem;background:var(--accent);color:#fff;border:none;border-radius:7px;cursor:pointer;font-size:.875rem;font-weight:600;font-family:inherit;transition:background .15s}
+  .btn-search:hover{background:#1d4ed8}
+  .btn-reset{padding:.55rem 1rem;background:transparent;color:var(--muted);border:1.5px solid var(--border);border-radius:7px;cursor:pointer;font-size:.875rem;font-family:inherit}
+  .btn-reset:hover{border-color:var(--ink);color:var(--ink)}
+  .btn-export{padding:.55rem 1.1rem;background:#f0fdf4;color:var(--green);border:1.5px solid #bbf7d0;border-radius:7px;cursor:pointer;font-size:.875rem;font-weight:600;font-family:inherit;margin-left:auto}
+  .btn-export:hover{background:#dcfce7}
+  
+  .table-card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+  .table-head{padding:1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+  .table-head h2{font-size:.95rem;font-weight:600}
+  .count-badge{font-size:.8rem;color:var(--muted);background:var(--bg);border:1px solid var(--border);padding:.2rem .7rem;border-radius:20px}
+  .table-wrap{overflow-x:auto}
+  table{width:100%;border-collapse:collapse}
+  th{background:#fafaf8;text-align:left;padding:.7rem 1rem;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);white-space:nowrap}
+  td{padding:.9rem 1rem;border-bottom:1px solid var(--border);font-size:.875rem;vertical-align:middle}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:#fafaf8}
+  code{background:#f3f4f6;padding:.15rem .45rem;border-radius:4px;font-size:.82rem;font-family:monospace}
+  .badge{display:inline-block;padding:.22rem .65rem;border-radius:20px;font-size:.75rem;font-weight:600}
+  .badge-student{background:#dbeafe;color:#1d4ed8}.badge-supervisor{background:#f0fdf4;color:#16a34a}.badge-m{background:#ede9fe;color:#7c3aed}.badge-p{background:#dbeafe;color:#1d4ed8}
+  .btn-view{background:var(--light);color:var(--accent);border:1px solid #bfdbfe;border-radius:5px;padding:.3rem .75rem;cursor:pointer;font-size:.8rem;font-family:inherit;font-weight:600;text-decoration:none;display:inline-block}
+  .btn-view:hover{background:#dbeafe}
+  .btn-del{background:#fef2f2;color:var(--red);border:1px solid #fecaca;border-radius:5px;padding:.3rem .75rem;cursor:pointer;font-size:.8rem;font-family:inherit;margin-left:.35rem}
+  .btn-del:hover{background:#fee2e2}
+  .pag{padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;justify-content:center;gap:.4rem;flex-wrap:wrap}
+  .pg-btn{padding:.38rem .8rem;border:1.5px solid var(--border);border-radius:6px;cursor:pointer;font-size:.875rem;background:#fff;font-family:inherit;transition:all .15s}
+  .pg-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .pg-btn:hover:not(.active){background:var(--bg)}
+  .empty{padding:4rem;text-align:center;color:var(--muted)}
+  .empty .eico{font-size:2.5rem;margin-bottom:.75rem}
+  .empty p{font-size:.9rem}
+  #noData{background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:1.25rem 1.5rem;margin-bottom:1.5rem;font-size:.875rem;color:#92400e;display:none}
+  #noData.on{display:block}
+  #noData strong{display:block;margin-bottom:.4rem;font-size:.95rem}
+  @media(max-width:640px){main{padding:1rem}}
 </style>
 </head>
 <body>
 
-<!-- ── LOGIN SCREEN ──────────────────────────────────────── -->
 <div id="loginScreen">
   <div class="login-card">
     <div class="login-logo">TAIRI</div>
     <div class="login-sub">Report Portal — Admin Access</div>
-
     <div class="login-err" id="loginErr"></div>
-
     <form id="loginForm">
       <div class="lf">
         <label>Password</label>
@@ -271,15 +99,10 @@
       </div>
       <button type="submit" class="btn-login">Sign In →</button>
     </form>
-
-
-    <a href="index.html" class="back-link">← Back to Portal</a>
   </div>
 </div>
 
-<!-- ── DASHBOARD ─────────────────────────────────────────── -->
 <div id="dashboard">
-
   <nav>
     <div class="nav-brand">TAIRI <span>Admin</span></div>
     <div class="nav-right">
@@ -289,310 +112,68 @@
   </nav>
 
   <main>
+    <div id="noData"><strong>No submissions yet</strong>When students and supervisors submit reports, they'll appear here automatically.</div>
 
-    <!-- Notice if no submissions yet -->
-    <div id="noData">
-      <strong> No submissions yet</strong>
-      When students and supervisors submit reports via <strong>index.html</strong>, they'll appear here automatically.
+    <div class="stats">
+      <div class="sc"><div class="sc-label">Total Reports</div><div class="sc-value c-blue" id="sTotal">0</div></div>
+      <div class="sc"><div class="sc-label">Student Reports</div><div class="sc-value c-green" id="sStudent">0</div></div>
+      <div class="sc"><div class="sc-label">Team Reports</div><div class="sc-value c-orange" id="sSupervisor">0</div></div>
+      <div class="sc"><div class="sc-label">This Month</div><div class="sc-value c-purple" id="sThisMonth">0</div></div>
     </div>
 
-    <!-- Stats -->
-    <div class="stats" id="statsGrid">
-      <div class="sc"><div class="sc-label">Total Reports</div>      <div class="sc-value c-blue"  id="sTotal">0</div></div>
-      <div class="sc"><div class="sc-label">Student Reports</div>    <div class="sc-value c-green" id="sStudent">0</div></div>
-      <div class="sc"><div class="sc-label">Supervisor Reports</div><div class="sc-value c-orange" id="sSupervisor">0</div></div>
-      <div class="sc"><div class="sc-label">This Month</div>         <div class="sc-value c-purple" id="sThisMonth">0</div></div>
-    </div>
-
-    <!-- Toolbar -->
     <div class="toolbar">
-      <div class="tf">
-        <label>Search</label>
-        <input type="text" id="fSearch" placeholder="Name or reg. number…"/>
-      </div>
-      <div class="tf">
-        <label>Type</label>
-        <select id="fType">
-          <option value="">All Types</option>
-          <option value="student">Student Reports</option>
-          <option value="supervisor">Supervisor Reports</option>
-        </select>
-      </div>
-      <div class="tf">
-        <label>Program</label>
-        <select id="fProg">
-          <option value="">All Programs</option>
-          <option>Masters</option>
-          <option>PhD</option>
-        </select>
-      </div>
-      <div class="tf">
-        <label>Month</label>
-        <select id="fMonth">
-          <option value="">All Months</option>
-          <option>January</option><option>February</option><option>March</option>
-          <option>April</option><option>May</option><option>June</option>
-          <option>July</option><option>August</option><option>September</option>
-          <option>October</option><option>November</option><option>December</option>
-        </select>
-      </div>
+      <div class="tf"><label>Search</label><input type="text" id="fSearch" placeholder="Name or reg. number…"/></div>
+      <div class="tf"><label>Type</label><select id="fType"><option value="">All Types</option><option value="student">Student Reports</option><option value="supervisor">Team Reports</option></select></div>
+      <div class="tf"><label>Program</label><select id="fProg"><option value="">All Programs</option><option>Masters</option><option>PhD</option></select></div>
+      <div class="tf"><label>Month</label><select id="fMonth"><option value="">All Months</option><option>January</option><option>February</option><option>March</option><option>April</option><option>May</option><option>June</option><option>July</option><option>August</option><option>September</option><option>October</option><option>November</option><option>December</option></select></div>
+      <div class="tf"><label>Year</label><select id="fYear"><option value="">All Years</option><option>2026</option><option>2027</option></select></div>
       <button class="btn-search" onclick="render(1)"> Search</button>
-      <button class="btn-reset"  onclick="resetFilters()">Reset</button>
+      <button class="btn-reset" onclick="resetFilters()">Reset</button>
       <button class="btn-export" onclick="exportCSV()">Export CSV</button>
     </div>
 
-    <!-- Table -->
     <div class="table-card">
-      <div class="table-head">
-        <h2>All Submissions</h2>
-        <span class="count-badge" id="countBadge">0 records</span>
-      </div>
+      <div class="table-head"><h2>All Submissions</h2><span class="count-badge" id="countBadge">0 records</span></div>
       <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Type</th>
-              <th>Name</th>
-              <th>Reg. Number</th>
-              <th>Program</th>
-              <th>Supervisor</th>
-              <th>Month</th>
-              <th>Size</th>
-              <th>Submitted</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="tbody"></tbody>
-        </table>
+        <table><thead><tr><th>#</th><th>Type</th><th>Name</th><th>Reg. Number</th><th>Program</th><th>Supervisor</th><th>Month</th><th>Year</th><th>Size</th><th>Submitted</th><th>Actions</th></tr></thead><tbody id="tbody"></tbody></table>
       </div>
       <div class="pag" id="pag"></div>
     </div>
-
   </main>
 </div>
 
 <script>
-// ════════════════════════════════════════════════════════════
-//  CONFIG
-// ════════════════════════════════════════════════════════════
-const ADMIN_PASSWORD = 'tairi2025';   // ← CHANGE THIS
-// ════════════════════════════════════════════════════════════
+const ADMIN_PASSWORD='tairi2026';
+const $=id=>document.getElementById(id);
+const PER_PAGE=15;
+let currentPage=1;
 
-const $ = id => document.getElementById(id);
-const PER_PAGE = 15;
-let currentPage = 1;
+function isLoggedIn(){return sessionStorage.getItem('tairi_admin')==='1'}
+function logout(){sessionStorage.removeItem('tairi_admin');$('dashboard').classList.remove('on');$('loginScreen').style.display='flex'}
 
-// ── Auth ──────────────────────────────────────────────────
-function isLoggedIn() { return sessionStorage.getItem('tairi_admin') === '1'; }
+$('loginForm').addEventListener('submit',e=>{e.preventDefault();const pw=$('loginPw').value;if(pw===ADMIN_PASSWORD){sessionStorage.setItem('tairi_admin','1');$('loginScreen').style.display='none';$('dashboard').classList.add('on');init()}else{$('loginErr').textContent='Incorrect password.';$('loginErr').classList.add('on');$('loginPw').value='';$('loginPw').focus()}});
 
-function logout() {
-  sessionStorage.removeItem('tairi_admin');
-  $('dashboard').classList.remove('on');
-  $('loginScreen').style.display = 'flex';
-}
+if(isLoggedIn()){$('loginScreen').style.display='none';$('dashboard').classList.add('on');init()}
 
-$('loginForm').addEventListener('submit', e => {
-  e.preventDefault();
-  const pw = $('loginPw').value;
-  if (pw === ADMIN_PASSWORD) {
-    sessionStorage.setItem('tairi_admin', '1');
-    $('loginScreen').style.display = 'none';
-    $('dashboard').classList.add('on');
-    init();
-  } else {
-    $('loginErr').textContent = 'Incorrect password. Please try again.';
-    $('loginErr').classList.add('on');
-    $('loginPw').value = '';
-    $('loginPw').focus();
-  }
-});
+function getAll(){return JSON.parse(localStorage.getItem('tairi_submissions')||'[]')}
 
-// Auto-login if session active
-if (isLoggedIn()) {
-  $('loginScreen').style.display = 'none';
-  $('dashboard').classList.add('on');
-  init();
-}
+function filtered(){const search=$('fSearch').value.trim().toLowerCase(),type=$('fType').value,prog=$('fProg').value,month=$('fMonth').value,year=$('fYear').value;return getAll().filter(s=>{const matchSearch=!search||(s.fullName&&s.fullName.toLowerCase().includes(search))||(s.regNum&&s.regNum.toLowerCase().includes(search))||(s.supervisorName&&s.supervisorName.toLowerCase().includes(search));const matchType=!type||s.type===type;const matchProg=!prog||s.program===prog;const matchMonth=!month||s.month===month;const matchYear=!year||s.year===year;return matchSearch&&matchType&&matchProg&&matchMonth&&matchYear}).sort((a,b)=>new Date(b.submittedAt)-new Date(a.submittedAt))}
 
-// ── Data ──────────────────────────────────────────────────
-function getAll() {
-  return JSON.parse(localStorage.getItem('tairi_submissions') || '[]');
-}
+function updateStats(){const all=getAll(),thisMonth=new Date().toLocaleString('en',{month:'long'});$('sTotal').textContent=all.length;$('sStudent').textContent=all.filter(s=>s.type==='student').length;$('sSupervisor').textContent=all.filter(s=>s.type==='supervisor').length;$('sThisMonth').textContent=all.filter(s=>s.month===thisMonth).length;if(all.length===0)$('noData').classList.add('on');else $('noData').classList.remove('on')}
 
-function filtered() {
-  const search = $('fSearch').value.trim().toLowerCase();
-  const type   = $('fType').value;
-  const prog   = $('fProg').value;
-  const month  = $('fMonth').value;
+function render(page){currentPage=page;const data=filtered(),total=data.length,start=(page-1)*PER_PAGE,slice=data.slice(start,start+PER_PAGE),pages=Math.ceil(total/PER_PAGE);$('countBadge').textContent=`${total} record${total!==1?'s':''}`;if(!slice.length){$('tbody').innerHTML=`<tr><td colspan="11"><div class="empty"><div class="eico">📭</div><p>${total===0&&getAll().length>0?'No results match your filters.':'No submissions yet.'}</p></div></td></tr>`}else{$('tbody').innerHTML=slice.map((s,i)=>{if(s.type==='student'){return`<tr><td>${start+i+1}</td><td><span class="badge badge-student">Student</span></td><td><strong>${esc(s.fullName)}</strong></td><td><code>${esc(s.regNum)}</code></td><td><span class="badge ${s.program==='Masters'?'badge-m':'badge-p'}">${s.program}</span></td><td>${esc(s.supervisor)}</td><td>${s.month}</td><td>${s.year}</td><td>${s.fileSize?(s.fileSize/1024).toFixed(0)+' KB':'—'}</td><td>${formatDate(s.submittedAt)}</td><td><a class="btn-view" href="${esc(s.fileUrl)}" target="_blank" rel="noopener">📄 Open</a><button class="btn-del" onclick="del('${s.id}','${esc(s.fullName)}')">🗑</button></td></tr>`}else{return`<tr><td>${start+i+1}</td><td><span class="badge badge-supervisor">Team</span></td><td><strong>${esc(s.supervisorName)}</strong></td><td>—</td><td>—</td><td>—</td><td>${s.month}</td><td>${s.year}</td><td>${s.fileSize?(s.fileSize/1024).toFixed(0)+' KB':'—'}</td><td>${formatDate(s.submittedAt)}</td><td><a class="btn-view" href="${esc(s.fileUrl)}" target="_blank" rel="noopener">📄 Open</a><button class="btn-del" onclick="del('${s.id}','${esc(s.supervisorName)}')">🗑</button></td></tr>`}}).join('')}$('pag').innerHTML=pages<=1?'':Array.from({length:pages},(_,i)=>`<button class="pg-btn${i+1===page?' active':''}" onclick="render(${i+1})">${i+1}</button>`).join('')}
 
-  return getAll().filter(s => {
-    const matchSearch = !search || 
-      (s.fullName && s.fullName.toLowerCase().includes(search)) ||
-      (s.regNum && s.regNum.toLowerCase().includes(search)) ||
-      (s.supervisorName && s.supervisorName.toLowerCase().includes(search));
-    const matchType  = !type  || s.type === type;
-    const matchProg  = !prog  || s.program === prog;
-    const matchMonth = !month || s.month === month;
-    return matchSearch && matchType && matchProg && matchMonth;
-  }).sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt));
-}
+function del(id,name){if(!confirm(`Remove submission from "${name}"?\n\nNote: File in Cloudinary still exists.`))return;const updated=getAll().filter(s=>s.id!==id);localStorage.setItem('tairi_submissions',JSON.stringify(updated));updateStats();render(currentPage)}
 
-// ── Stats ─────────────────────────────────────────────────
-function updateStats() {
-  const all       = getAll();
-  const thisMonth = new Date().toLocaleString('en',{month:'long'});
+function exportCSV(){const data=filtered();if(!data.length){alert('No data to export.');return}const header=['Type','Name','Reg Number','Program','Supervisor','Month','Year','File Size (KB)','Submitted','File URL'];const rows=data.map(s=>{if(s.type==='student'){return['Student',`"${s.fullName}"`,`"${s.regNum}"`,s.program,`"${s.supervisor}"`,s.month,s.year,s.fileSize?(s.fileSize/1024).toFixed(0):'',new Date(s.submittedAt).toLocaleString(),`"${s.fileUrl}"`]}else{return['Team',`"${s.supervisorName}"`, '','','',s.month,s.year,s.fileSize?(s.fileSize/1024).toFixed(0):'',new Date(s.submittedAt).toLocaleString(),`"${s.fileUrl}"`]}});const csv=[header,...rows].map(r=>r.join(',')).join('\n');const blob=new Blob([csv],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`tairi_submissions_${new Date().toISOString().slice(0,10)}.csv`;a.click()}
 
-  $('sTotal').textContent      = all.length;
-  $('sStudent').textContent    = all.filter(s => s.type === 'student').length;
-  $('sSupervisor').textContent = all.filter(s => s.type === 'supervisor').length;
-  $('sThisMonth').textContent  = all.filter(s => s.month === thisMonth).length;
+function formatDate(iso){return new Date(iso).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})}
 
-  if (all.length === 0) $('noData').classList.add('on');
-  else $('noData').classList.remove('on');
-}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
 
-// ── Render table ──────────────────────────────────────────
-function render(page) {
-  currentPage = page;
-  const data   = filtered();
-  const total  = data.length;
-  const start  = (page - 1) * PER_PAGE;
-  const slice  = data.slice(start, start + PER_PAGE);
-  const pages  = Math.ceil(total / PER_PAGE);
+function resetFilters(){$('fSearch').value='';$('fType').value='';$('fProg').value='';$('fMonth').value='';$('fYear').value='';render(1)}
 
-  $('countBadge').textContent = `${total} record${total !== 1 ? 's' : ''}`;
-
-  if (!slice.length) {
-    $('tbody').innerHTML = `
-      <tr><td colspan="10">
-        <div class="empty">
-          <div class="eico"></div>
-          <p>${total === 0 && getAll().length > 0 ? 'No results match your filters.' : 'No submissions yet.'}</p>
-        </div>
-      </td></tr>`;
-  } else {
-    $('tbody').innerHTML = slice.map((s, i) => {
-      if (s.type === 'student') {
-        return `
-          <tr>
-            <td>${start + i + 1}</td>
-            <td><span class="badge badge-student">Student</span></td>
-            <td><strong>${esc(s.fullName)}</strong></td>
-            <td><code>${esc(s.regNum)}</code></td>
-            <td><span class="badge ${s.program === 'Masters' ? 'badge-m' : 'badge-p'}">${s.program}</span></td>
-            <td>${esc(s.supervisor)}</td>
-            <td>${s.month}</td>
-            <td>${s.fileSize ? (s.fileSize / 1024).toFixed(0) + ' KB' : '—'}</td>
-            <td>${formatDate(s.submittedAt)}</td>
-            <td>
-              <a class="btn-view" href="${esc(s.fileUrl)}" target="_blank" rel="noopener">Open</a>
-              <button class="btn-del" onclick="del('${s.id}', '${esc(s.fullName)}')"></button>
-            </td>
-          </tr>`;
-      } else {
-        return `
-          <tr>
-            <td>${start + i + 1}</td>
-            <td><span class="badge badge-supervisor">Supervisor</span></td>
-            <td><strong>${esc(s.supervisorName)}</strong></td>
-            <td>—</td>
-            <td>—</td>
-            <td>—</td>
-            <td>${s.month}</td>
-            <td>${s.fileSize ? (s.fileSize / 1024).toFixed(0) + ' KB' : '—'}</td>
-            <td>${formatDate(s.submittedAt)}</td>
-            <td>
-              <a class="btn-view" href="${esc(s.fileUrl)}" target="_blank" rel="noopener"> Open</a>
-              <button class="btn-del" onclick="del('${s.id}', '${esc(s.supervisorName)}')"></button>
-            </td>
-          </tr>`;
-      }
-    }).join('');
-  }
-
-  // Pagination
-  $('pag').innerHTML = pages <= 1 ? '' :
-    Array.from({length: pages}, (_, i) =>
-      `<button class="pg-btn${i+1 === page ? ' active' : ''}" onclick="render(${i+1})">${i+1}</button>`
-    ).join('');
-}
-
-// ── Delete ────────────────────────────────────────────────
-function del(id, name) {
-  if (!confirm(`Remove submission from "${name}"?\n\nNote: The file in Cloudinary still exists.`)) return;
-  const updated = getAll().filter(s => s.id !== id);
-  localStorage.setItem('tairi_submissions', JSON.stringify(updated));
-  updateStats();
-  render(currentPage);
-}
-
-// ── Export CSV ────────────────────────────────────────────
-function exportCSV() {
-  const data = filtered();
-  if (!data.length) { alert('No data to export.'); return; }
-  
-  const header = ['Type', 'Name', 'Reg Number', 'Program', 'Supervisor', 'Month', 'File Size (KB)', 'Submitted', 'File URL'];
-  const rows   = data.map(s => {
-    if (s.type === 'student') {
-      return [
-        'Student',
-        `"${s.fullName}"`,
-        `"${s.regNum}"`,
-        s.program,
-        `"${s.supervisor}"`,
-        s.month,
-        s.fileSize ? (s.fileSize / 1024).toFixed(0) : '',
-        new Date(s.submittedAt).toLocaleString(),
-        `"${s.fileUrl}"`,
-      ];
-    } else {
-      return [
-        'Supervisor',
-        `"${s.supervisorName}"`,
-        '',
-        '',
-        '',
-        s.month,
-        s.fileSize ? (s.fileSize / 1024).toFixed(0) : '',
-        new Date(s.submittedAt).toLocaleString(),
-        `"${s.fileUrl}"`,
-      ];
-    }
-  });
-  
-  const csv  = [header, ...rows].map(r => r.join(',')).join('\n');
-  const blob = new Blob([csv], { type: 'text/csv' });
-  const a    = document.createElement('a');
-  a.href     = URL.createObjectURL(blob);
-  a.download = `tairi_submissions_${new Date().toISOString().slice(0,10)}.csv`;
-  a.click();
-}
-
-// ── Helpers ───────────────────────────────────────────────
-function formatDate(iso) {
-  return new Date(iso).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
-}
-
-function esc(s) {
-  return String(s || '')
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-}
-
-function resetFilters() {
-  $('fSearch').value = '';
-  $('fType').value   = '';
-  $('fProg').value   = '';
-  $('fMonth').value  = '';
-  render(1);
-}
-
-function init() {
-  updateStats();
-  render(1);
-  $('fSearch').addEventListener('keydown', e => { if (e.key === 'Enter') render(1); });
-}
+function init(){updateStats();render(1);$('fSearch').addEventListener('keydown',e=>{if(e.key==='Enter')render(1)})}
 </script>
 </body>
 </html>
